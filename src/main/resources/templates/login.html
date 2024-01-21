@@ -6,6 +6,10 @@
 </head>
 <body>
 
+<!--<div th:if="${#authorization.expression('isAuthenticated()')}">
+     Print the username
+    <p th:text="${#authentication.name}"></p>
+</div>-->
 <h2>Login</h2>
 
 <form action="/login" method="post">
@@ -15,6 +19,8 @@
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
     <br>
+
+    <p th:if="${loginError}" class="error">Wrong user or password</p>
     <button type="submit">Login</button>
 </form>
 

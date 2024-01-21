@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class AuthController {
     public AuthController() {
     }
 
-    @GetMapping({"/register"})
+    @GetMapping({"register"})
     public String registerForm(Model model) {
         model.addAttribute("user", new User());
 
@@ -35,9 +37,22 @@ public class AuthController {
         return "redirect:/users";
     }
 
-    @GetMapping({"login"})
-    public String showLoginForm(Model model) {
+    @RequestMapping({"login"})
+    public String showLoginForm(Authentication authentication, Model model) {
+
+        String str = this.service.getCurrentUsername();
+System.out.println(str);
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("username", authentication.getName());
+        }
         //model.addAttribute("user", new User());
+        return "login";
+    }
+
+    // Login form with error
+    @RequestMapping("/login-error")
+    public String loginError(Model model) {
+        model.addAttribute("loginError", true);
         return "login";
     }
 

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 public class UserService {
@@ -13,11 +16,16 @@ public class UserService {
     @Autowired
     private UserRepository repo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public List<User> listAll() {
         return (List<User>) repo.findAll();
     }
 
     public void save(User user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         repo.save(user);
     }
 
@@ -35,5 +43,15 @@ public class UserService {
             throw new UserNotFoundException("Could not find any users with ID " + id);
         }
         repo.deleteById(id);
+    }
+
+    public String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null; // No authenticated user
+        }
+
+        return authentication.getName();
     }
 }
